@@ -105,7 +105,6 @@ class SerializationTools implements Serializable{
 			throw new IOException(e);
 		}
 		finally {
-			// releases all system resources from the streams
 			try {
 				if(baos!=null)
 					baos.close();
