@@ -306,6 +306,11 @@ public class BDD implements AutoCloseable{
 	 */
 	private void readFreeSpaceTab() throws IOException {
 		//TODO complete
+		try{
+			SerializationTools.deserializeFreeSpaceIntervals(readData(SPACE_TAB_REFERENCE_POSITION));
+		} catch (IOException e){
+			throw new IOException(e);
+		}
 	}
 
 	/**
