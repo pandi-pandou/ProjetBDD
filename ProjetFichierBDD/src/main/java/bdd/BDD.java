@@ -317,6 +317,14 @@ public class BDD implements AutoCloseable{
 	 */
 	private void removeFreeSpaceTab() throws IOException {
 		//TODO complete
+		try{
+			if(SPACE_TAB_REFERENCE_POSITION <= 16){
+		    removeObject(SPACE_TAB_REFERENCE_POSITION);
+		    }
+		} catch (IOException e){
+		    throw new IOException(e);
+		}
+
 	}
 
 	@Override
