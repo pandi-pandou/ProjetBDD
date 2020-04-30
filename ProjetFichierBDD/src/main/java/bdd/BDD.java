@@ -307,13 +307,13 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void saveFreeSpaceTab() throws IOException {
-		//TODO complete
 		try{
 			removeFreeSpaceTab();
-			freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(raf.length()-1));
-
-			/*writeData(raf., raf.length()-1);
-			SPACE_TAB_REFERENCE_POSITION = raf.length()-1;*/
+			byte[] tab = SerializationTools.serializeFreeSpaceIntervals(freeSpaceIntervals);
+			long pos = raf.length()-1;
+			writeData(tab, pos);
+			this.raf.seek(BDD.SPACE_TAB_REFERENCE_POSITION);
+			this.raf.writeLong(pos);
 		}  catch (IOException e){
 			throw new IOException(e);
 		}
@@ -325,7 +325,6 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void readFreeSpaceTab() throws IOException {
-		//TODO complete
 		try{
 			freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(SPACE_TAB_REFERENCE_POSITION));
 		} catch (IOException e){
@@ -341,7 +340,6 @@ public class BDD implements AutoCloseable{
 	 *
 	 */
 	private void removeFreeSpaceTab() throws IOException {
-		//TODO complete
 		try{
 			if(SPACE_TAB_REFERENCE_POSITION <= 16){
 		    removeObject(SPACE_TAB_REFERENCE_POSITION);
