@@ -314,7 +314,8 @@ public class BDD implements AutoCloseable{
 	 * @throws ClassNotFoundException si la désérialisation se passe mal.
 	 */
 	private void readLinks() throws IOException, ClassNotFoundException {
-		//TODO complete
+		byte [] tab = readData(LINKS_REFERENCE_POSITION);
+		this.links = (HashMap<String, Long>) SerializationTools.deserialize(tab);
 	}
 
 	/**
@@ -349,8 +350,8 @@ public class BDD implements AutoCloseable{
 	private void saveFreeSpaceTab() throws IOException {
 		try{
 			removeFreeSpaceTab();
-			byte[] tab = SerializationTools.serializeFreeSpaceIntervals(freeSpaceIntervals);
-			long pos = raf.length()-1;
+			byte[] tab = SerializationTools.serializeFreeSpaceIntervals(this.freeSpaceIntervals);
+			long pos = this.raf.length()-1;
 			writeData(tab, pos);
 			this.raf.seek(BDD.SPACE_TAB_REFERENCE_POSITION);
 			this.raf.writeLong(pos);
@@ -366,7 +367,7 @@ public class BDD implements AutoCloseable{
 	 */
 	private void readFreeSpaceTab() throws IOException {
 		try{
-			freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(SPACE_TAB_REFERENCE_POSITION));
+			this.freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(SPACE_TAB_REFERENCE_POSITION));
 		} catch (IOException e){
 			throw new IOException(e);
 		}
@@ -382,18 +383,17 @@ public class BDD implements AutoCloseable{
 	private void removeFreeSpaceTab() throws IOException {
 		try{
 			if(SPACE_TAB_REFERENCE_POSITION <= 16){
-		    removeObject(SPACE_TAB_REFERENCE_POSITION);
+		    	removeObject(SPACE_TAB_REFERENCE_POSITION);
 		    }
 		} catch (IOException e){
 		    throw new IOException(e);
 		}
-
 	}
 
 	@Override
 	public void close() throws Exception {
 		saveMetaData();
-		raf.close();
+		this.raf.close();
 	}
 
 
