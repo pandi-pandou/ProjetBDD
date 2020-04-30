@@ -212,7 +212,7 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private long findPosition(long desiredLength) throws IOException {
-		return findPositionIntoFreeSpace(desiredLength);
+		return findPositionIntoFreeSpace(desiredLength) != null? findPositionIntoFreeSpace(desiredLength): this.raf.length();
 	}
 
 	/**
@@ -224,7 +224,14 @@ public class BDD implements AutoCloseable{
 	 */
 	private Long findPositionIntoFreeSpace(long desiredLength)
 	{
-		//TODO complete
+		long index;
+		for (FreeSpaceInterval freeSpace : this.freeSpaceIntervals) {
+			if (freeSpace.getLength() >= desiredLength) {
+				long startPos = freeSpace.getStartPosition();
+				this.freeSpaceIntervals.remove(freeSpace);
+				return startPos;
+			}
+		}
 		return null;
 	}
 
@@ -236,7 +243,10 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	public boolean removeObject(String objectName) throws IOException {
-		//TODO complete
+		if (this.links.containsKey(objectName)) {
+			this.removeObject(this.links.get(objectName));
+			return true;
+		}
 		return false;
 	}
 
@@ -253,7 +263,31 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void removeObject(long pos) throws IOException {
-		//TODO complete
+		this.raf.seek(pos);
+		int len = this.raf.readInt();
+		if (pos + 4 + len == this.raf.length() - 1) {
+			this.raf.setLength(pos);
+			return;
+		}
+		FreeSpaceInterval precedent = null;
+		FreeSpaceInterval remove = null;
+		for (FreeSpaceInterval freeSpace : this.freeSpaceIntervals) {
+			if (freeSpace.getStartPosition() + freeSpace.getLength() == pos - 1) {
+				freeSpace.length += len;
+				precedent = freeSpace;
+			} else if (freeSpace.getStartPosition() == pos + len + 1) {
+				if (precedent != null) {
+					precedent.length += freeSpace.getLength();
+					remove = freeSpace;
+				} else {
+					this.freeSpaceIntervals.add(new FreeSpaceInterval(pos, len + freeSpace.getLength()));
+					remove = freeSpace;
+				}
+			}
+		}
+		if (remove != null) {
+			this.freeSpaceIntervals.remove(remove);
+		}
 	}
 
 
