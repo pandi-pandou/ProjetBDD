@@ -97,7 +97,7 @@ public class BDD implements AutoCloseable{
 			//initialiation des métadonnées
 			freeSpaceIntervals =new TreeSet<>();
 			links=new HashMap<>();
-		}
+	}
 		else
 		{
 			//le fichier n'est pas vide, donc on charge les deux métadonnées de notre base de données.
@@ -308,6 +308,14 @@ public class BDD implements AutoCloseable{
 	 */
 	private void saveFreeSpaceTab() throws IOException {
 		//TODO complete
+		try{
+			removeFreeSpaceTab();
+			freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(raf.length()-1));
+			/*writeData(, raf.length()-1);
+			SPACE_TAB_REFERENCE_POSITION = raf.length()-1;*/
+		}  catch (IOException e){
+			throw new IOException(e);
+		}
 	}
 
 	/**
@@ -317,6 +325,11 @@ public class BDD implements AutoCloseable{
 	 */
 	private void readFreeSpaceTab() throws IOException {
 		//TODO complete
+		try{
+			freeSpaceIntervals = SerializationTools.deserializeFreeSpaceIntervals(readData(SPACE_TAB_REFERENCE_POSITION));
+		} catch (IOException e){
+			throw new IOException(e);
+		}
 	}
 
 	/**
@@ -328,6 +341,14 @@ public class BDD implements AutoCloseable{
 	 */
 	private void removeFreeSpaceTab() throws IOException {
 		//TODO complete
+		try{
+			if(SPACE_TAB_REFERENCE_POSITION <= 16){
+		    removeObject(SPACE_TAB_REFERENCE_POSITION);
+		    }
+		} catch (IOException e){
+		    throw new IOException(e);
+		}
+
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import java.util.TreeSet;
  * @author Jason Mahdjoub
  * @version 1.0
  */
-class SerializationTools {
+class SerializationTools implements Serializable{
 	/**
 	 * Serialise/binarise l'objet passé en paramètre pour retourner un tableau binaire
 	 * @param o l'objet à serialiser
@@ -18,7 +18,28 @@ class SerializationTools {
 	 */
 	static byte[] serialize(Serializable o) throws IOException {
 		//TODO complete
-		return null;
+		if(o != null) {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(bos);
+			byte[] binaryTab = null;
+			try {
+				oos.writeObject(o);
+				oos.flush();
+				binaryTab = bos.toByteArray();
+			} finally {
+				try {
+					if (bos != null) {
+						bos.close();
+					}
+				} catch (IOException e) {
+					throw new IOException(e);
+				}
+			}
+			return binaryTab;
+		} else{
+			throw new NullPointerException("Object is null.");
+		}
+
 	}
 
 	/**
@@ -30,7 +51,26 @@ class SerializationTools {
 	 */
 	static Serializable deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		//TODO complete
-		return null;
+
+		ByteArrayInputStream bis = new ByteArrayInputStream(data);
+		ObjectInput in = null;
+		Serializable o = null;
+		try {
+			in = new ObjectInputStream(bis);
+			o = (Serializable) in.readObject();
+		}catch (final ClassNotFoundException e) {
+			e.printStackTrace();
+		} finally
+		 {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException e) {
+				throw new IOException(e);
+			}
+		}
+		return o;
 	}
 
 	/**
@@ -48,7 +88,38 @@ class SerializationTools {
 	 */
 	static byte[] serializeFreeSpaceIntervals(TreeSet<BDD.FreeSpaceInterval> freeSpaceIntervals) throws IOException {
 		//TODO complete
-		return null;
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = null;
+		byte[] result = null;
+		try {
+			dos = new DataOutputStream(baos);
+
+			for(BDD.FreeSpaceInterval interval : freeSpaceIntervals){
+				dos.writeUTF(String.valueOf(interval.getStartPosition()));
+				dos.writeUTF(String.valueOf(interval.getLength()));
+				dos.flush();
+				result = baos.toByteArray();
+			}
+		} catch (IOException e) {
+			throw new IOException(e);
+		}
+		finally {
+			try {
+				if(baos!=null)
+					baos.close();
+			} catch (IOException e) {
+				throw new IOException(e);
+			}
+			try {
+				if(dos!=null)
+					dos.close();
+			} catch (IOException e) {
+				throw new IOException(e);
+			}
+		}
+
+		return result;
 	}
 
 	/**
@@ -59,6 +130,24 @@ class SerializationTools {
 	 */
 	static TreeSet<BDD.FreeSpaceInterval> deserializeFreeSpaceIntervals(byte[] data) throws IOException {
 		//TODO complete
-		return null;
+
+		ByteArrayInputStream bis = new ByteArrayInputStream(data);
+		DataInputStream dis = null;
+		Serializable o = null;
+		try {
+			dis = new DataInputStream(bis);
+			o = (Serializable) dis.read(data);
+		}
+		finally
+		{
+			try {
+				if (dis != null) {
+					dis.close();
+				}
+			} catch (IOException e) {
+				throw new IOException(e);
+			}
+		}
+		return (TreeSet<BDD.FreeSpaceInterval>) o;
 	}
 }
