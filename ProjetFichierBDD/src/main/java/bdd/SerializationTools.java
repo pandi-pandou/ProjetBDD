@@ -96,8 +96,8 @@ class SerializationTools implements Serializable{
 			dos = new DataOutputStream(baos);
 
 			for(BDD.FreeSpaceInterval interval : freeSpaceIntervals){
-				dos.writeUTF(String.valueOf(interval.getStartPosition()));
-				dos.writeUTF(String.valueOf(interval.getLength()));
+				dos.writeLong(interval.getStartPosition());
+				dos.writeLong(interval.getLength());
 				dos.flush();
 				result = baos.toByteArray();
 			}
