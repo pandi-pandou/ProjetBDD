@@ -17,7 +17,6 @@ class SerializationTools implements Serializable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	static byte[] serialize(Serializable o) throws IOException {
-		//TODO complete
 		if(o != null) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(bos);
@@ -50,8 +49,6 @@ class SerializationTools implements Serializable{
 	 * @throws ClassNotFoundException si un problème lors de la déserialisation s'est produit
 	 */
 	static Serializable deserialize(byte[] data) throws IOException, ClassNotFoundException {
-		//TODO complete
-
 		ByteArrayInputStream bis = new ByteArrayInputStream(data);
 		ObjectInput in = null;
 		Serializable o = null;
@@ -87,8 +84,6 @@ class SerializationTools implements Serializable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	static byte[] serializeFreeSpaceIntervals(TreeSet<BDD.FreeSpaceInterval> freeSpaceIntervals) throws IOException {
-		//TODO complete
-
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputStream dos = null;
 		byte[] result = null;
@@ -96,8 +91,8 @@ class SerializationTools implements Serializable{
 			dos = new DataOutputStream(baos);
 
 			for(BDD.FreeSpaceInterval interval : freeSpaceIntervals){
-				dos.writeUTF(String.valueOf(interval.getStartPosition()));
-				dos.writeUTF(String.valueOf(interval.getLength()));
+				dos.writeLong(interval.getStartPosition());
+				dos.writeLong(interval.getLength());
 				dos.flush();
 				result = baos.toByteArray();
 			}
@@ -129,8 +124,6 @@ class SerializationTools implements Serializable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	static TreeSet<BDD.FreeSpaceInterval> deserializeFreeSpaceIntervals(byte[] data) throws IOException {
-		//TODO complete
-
 		ByteArrayInputStream bis = new ByteArrayInputStream(data);
 		DataInputStream dis = null;
 		Serializable o = null;
