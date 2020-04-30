@@ -304,7 +304,12 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void saveLinks() throws IOException {
-		//TODO complete
+		this.removeLinks();
+		byte[] tab = SerializationTools.serialize(this.links);
+		long pos = this.findPosition(tab);
+		this.writeData(tab, pos);
+		this.raf.seek(BDD.LINKS_REFERENCE_POSITION);
+		this.raf.writeLong(pos);
 	}
 
 	/**
