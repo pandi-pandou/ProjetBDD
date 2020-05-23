@@ -104,6 +104,7 @@ public class BDD implements AutoCloseable{
 			readLinks();
 			readFreeSpaceTab();
 		}
+
 	}
 
 	/**
@@ -127,9 +128,13 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	public void putObject(String objectName, Serializable object) throws IOException {
-		SerializationTools serializer = new SerializationTools();
-		byte[] tab = serializer.serialize(object);
-		this.putData(objectName, tab);
+		try {
+			SerializationTools serializer = new SerializationTools();
+			byte[] tab = serializer.serialize(object);
+			this.putData(objectName, tab);
+		} catch (IOException e){
+			throw new IOException(e);
+		}
 	}
 	/**
 	 * Ajout d'un enregistrement linéairement dans le fichier.
@@ -142,12 +147,16 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void putData(String objectName, byte[] array) throws IOException {
-		if (this.links.containsKey(objectName)) {
-			this.removeObject(objectName);
+		try{
+			if (this.links.containsKey(objectName)) {
+				this.removeObject(objectName);
+			}
+			long index = this.findPosition(array);
+			this.writeData(array, index);
+			this.links.put(objectName, index);
+		} catch (IOException e){
+			throw new IOException(e);
 		}
-		long index = this.findPosition(array);
-		this.writeData(array, index);
-		this.links.put(objectName, index);
 	}
 
 	/**
@@ -157,9 +166,13 @@ public class BDD implements AutoCloseable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	private void writeData(byte[] data, long pos) throws IOException {
-		this.raf.seek(pos);
-		this.raf.writeInt(data.length);
-		this.raf.write(data);
+		try{
+			this.raf.seek(pos);
+			this.raf.writeInt(data.length);
+			this.raf.write(data);
+		} catch (IOException e){
+			throw new IOException(e);
+		}
 	}
 
 	/**
@@ -173,10 +186,20 @@ public class BDD implements AutoCloseable{
 	 * @throws ClassNotFoundException si l'object n'a pas pu être désérialisé
 	 */
 	public Serializable getObject(String objectName) throws IOException, ClassNotFoundException {
-		long index = this.links.get(objectName);
-		byte[] tab = this.readData(index);
-		SerializationTools serializer = new SerializationTools();
-		return serializer.deserialize(tab);
+		byte[] tab = null;
+		SerializationTools serializer = null;
+		try {
+			long index = this.links.get(objectName);
+			tab = this.readData(index);
+			serializer = new SerializationTools();
+		} catch (IOException e){
+			throw new IOException(e);
+		}
+		try {
+			return serializer.deserialize(tab);
+		} catch (IOException e){
+		throw new IOException(e);
+	}
 	}
 
 	/**
@@ -189,7 +212,7 @@ public class BDD implements AutoCloseable{
 	private byte[] readData(long pos) throws IOException {
 		this.raf.seek(pos);
 		int len = this.raf.readInt();
-		byte[] tab = new byte[len];
+		byte [] tab = new byte[len];
 		this.raf.read(tab);
 		return tab;
 	}
@@ -319,8 +342,13 @@ public class BDD implements AutoCloseable{
 	 * @throws ClassNotFoundException si la désérialisation se passe mal.
 	 */
 	private void readLinks() throws IOException, ClassNotFoundException {
-		byte [] tab = readData(LINKS_REFERENCE_POSITION);
-		this.links = (HashMap<String, Long>) SerializationTools.deserialize(tab);
+		try {
+			byte[] links = readData(LINKS_REFERENCE_POSITION);
+			Serializable links_deserialized = SerializationTools.deserialize(links);
+			this.links = (HashMap<String, Long>) links_deserialized;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

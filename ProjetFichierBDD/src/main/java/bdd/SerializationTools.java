@@ -17,28 +17,17 @@ class SerializationTools implements Serializable{
 	 * @throws IOException si un problème d'entrée/sortie se produit
 	 */
 	static byte[] serialize(Serializable o) throws IOException {
-		if(o != null) {
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(bos);
-			byte[] binaryTab = null;
-			try {
-				oos.writeObject(o);
-				oos.flush();
-				binaryTab = bos.toByteArray();
-			} finally {
-				try {
-					if (bos != null) {
-						bos.close();
-					}
-				} catch (IOException e) {
-					throw new IOException(e);
-				}
-			}
-			return binaryTab;
-		} else{
-			throw new NullPointerException("Object is null.");
+		if (o != null) {
+			ByteArrayOutputStream tab = new ByteArrayOutputStream();
+			ObjectOutputStream obj = new ObjectOutputStream(tab);
+			obj.writeObject(o);
+			obj.flush();
+			obj.close();
+			tab.close();
+			return tab.toByteArray();
+		} else {
+			throw new NullPointerException();
 		}
-
 	}
 
 	/**
@@ -49,25 +38,15 @@ class SerializationTools implements Serializable{
 	 * @throws ClassNotFoundException si un problème lors de la déserialisation s'est produit
 	 */
 	static Serializable deserialize(byte[] data) throws IOException, ClassNotFoundException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(data);
-		ObjectInput in = null;
-		Serializable o = null;
-		try {
-			in = new ObjectInputStream(bis);
-			o = (Serializable) in.readObject();
-		}catch (final ClassNotFoundException e) {
-			e.printStackTrace();
-		} finally
-		 {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
-				throw new IOException(e);
-			}
+		if (data != null) {
+			ByteArrayInputStream tab = new ByteArrayInputStream(data);
+			ObjectInputStream obj = new ObjectInputStream(tab);
+			tab.close();
+			obj.close();
+			return (Serializable) obj.readObject();
+		} else {
+			throw new NullPointerException();
 		}
-		return o;
 	}
 
 	/**
