@@ -95,9 +95,9 @@ class SerializationTools {
 	static TreeSet<BDD.FreeSpaceInterval> deserializeFreeSpaceIntervals(byte[] data) throws IOException {
 		if (data != null) {
 			TreeSet<BDD.FreeSpaceInterval> freeSpaceInterval = new TreeSet<BDD.FreeSpaceInterval>();
-			for(int i = 0; i < data.length; i = i+16){
+			for(int i = 0; i < data.length; i = i + 16){
 				try {
-					ByteArrayInputStream tab = new ByteArrayInputStream(Arrays.copyOfRange(data, i, i+8));
+					ByteArrayInputStream tab = new ByteArrayInputStream(Arrays.copyOfRange(data, i, i + 8));
 					ObjectInputStream obj = new ObjectInputStream(tab);
 					freeSpaceInterval.add((BDD.FreeSpaceInterval) obj.readObject());
 					tab.close();

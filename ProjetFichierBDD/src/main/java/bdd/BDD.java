@@ -186,8 +186,8 @@ public class BDD implements AutoCloseable{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			Serializable result = SerializationTools.deserialize(tab);
-			return result;
+			Serializable deserialized = SerializationTools.deserialize(tab);
+			return deserialized;
 		}else{
 			throw new NullPointerException();
 		}
