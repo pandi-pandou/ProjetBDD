@@ -414,7 +414,6 @@ public class BDD implements AutoCloseable{
 			byte[] data = SerializationTools.serializeFreeSpaceIntervals(this.freeSpaceIntervals);
 			long position = this.raf.length();
 			writeData(data, position);
-			//J'ai un doute sur cette ligne
 			writeData(SerializationTools.serialize(position),LINKS_REFERENCE_POSITION);
 		}else{
 			throw new NullPointerException();
